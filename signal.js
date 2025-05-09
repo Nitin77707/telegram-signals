@@ -11,7 +11,7 @@ const TP_PERCENT      = +process.env.TP_PERCENT     || 0.5
 const SL_PERCENT      = +process.env.SL_PERCENT     || 1.0
 const NUM_TP          = 5  // fixed
 
-const exchange = new ccxt.binance()
+const exchange = new ccxt.kucoin()
 
 async function loadState(){
   try {
