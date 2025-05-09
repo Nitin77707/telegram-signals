@@ -1,0 +1,9 @@
+{
+  "name": "telegram-signals",
+  "version": "1.0.0",
+  "type": "module",
+  "dependencies": {
+    "ccxt": "^3.0.0",
+    "node-fetch": "^3.0.0"
+  }
+}
