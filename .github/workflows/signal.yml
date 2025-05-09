@@ -1,3 +1,6 @@
+permissions:
+  contents: write  # allow pushing commits back to the repo
+
 name: SignalBot
 
 on:
