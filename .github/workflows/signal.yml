@@ -1,0 +1,44 @@
+name: SignalBot
+
+on:
+  schedule:
+    - cron: '*/1 * * * *'    # every minute
+  workflow_dispatch:        # manual trigger too
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          persist-credentials: true  # so we can push commits
+
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Run Signal Script
+        id: run
+        run: node signal.js
+        env:
+          BOT_TOKEN:       ${{ secrets.BOT_TOKEN }}
+          CHAT_ID:         ${{ secrets.CHAT_ID }}
+          ATR_LENGTH:      ${{ secrets.ATR_LENGTH }}
+          RISK_MULTIPLIER: ${{ secrets.RISK_MULTIPLIER }}
+          TP_PERCENT:      ${{ secrets.TP_PERCENT }}
+          SL_PERCENT:      ${{ secrets.SL_PERCENT }}
+
+      - name: Commit state.json if changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          if ! git diff --quiet; then
+            git add state.json
+            git commit -m "chore(state): update bot state"
+            git push
+          fi
