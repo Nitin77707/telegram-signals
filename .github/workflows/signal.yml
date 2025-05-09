@@ -1,32 +1,38 @@
-permissions:
-  contents: write  # allow pushing commits back to the repo
-
 name: SignalBot
+
+# Give the GITHUB_TOKEN permission to write back to your repo
+permissions:
+  contents: write
 
 on:
   schedule:
-    - cron: '*/1 * * * *'    # every minute
-  workflow_dispatch:        # manual trigger too
+    - cron: '*/1 * * * *'
+  workflow_dispatch:
 
 jobs:
   run:
     runs-on: ubuntu-latest
+
     steps:
+      # 1) Check out your repository so the runner can see and commit files
       - name: Checkout
         uses: actions/checkout@v3
         with:
-          persist-credentials: true  # so we can push commits
+          persist-credentials: true  # ← allows later git push to authenticate
+          fetch-depth: 0            # ← ensures git diff sees all history
 
+      # 2) Set up Node.js
       - name: Setup Node
         uses: actions/setup-node@v3
         with:
           node-version: '18'
 
+      # 3) Install dependencies
       - name: Install Dependencies
         run: npm install
 
+      # 4) Run your signal script
       - name: Run Signal Script
-        id: run
         run: node signal.js
         env:
           BOT_TOKEN:       ${{ secrets.BOT_TOKEN }}
@@ -36,6 +42,7 @@ jobs:
           TP_PERCENT:      ${{ secrets.TP_PERCENT }}
           SL_PERCENT:      ${{ secrets.SL_PERCENT }}
 
+      # 5) Commit state.json (if changed)
       - name: Commit state.json if changed
         run: |
           git config user.name "github-actions[bot]"
